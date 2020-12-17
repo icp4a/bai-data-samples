@@ -1,0 +1,115 @@
+#!/bin/bash
+
+##################################################################
+# Licensed Materials - Property of IBM
+#  5737-I23
+#  Copyright IBM Corp. 2020. All Rights Reserved.
+#  U.S. Government Users Restricted Rights:
+#  Use, duplication or disclosure restricted by GSA ADP Schedule
+#  Contract with IBM Corp.
+##################################################################
+
+set -e
+
+CUR_DIR=$(cd $(dirname $0); pwd)
+HOME_DIR="${CUR_DIR}/.."
+
+
+function showHelp {
+    echo -e "\nUsage: bai-import-index -u <Elasticsearch user name> -p <Elasticsearch user password> -k <Elasticsearch URL>\n -c <ICP4A component name>"
+    echo "Options:"
+    echo "  -h  Display help"
+    echo "  -u  Elasticsearch user name"
+    echo "  -p  Elasticsearch user password"
+    echo "  -k  Elasticsearch URL (On Docker: '<Elasticsearch hostname>:<Elasticsearch port>' or "
+    echo "      on Kubernetes: An Elasticsearch Route name)"
+    echo "  -c  The ICP4A component name ('bpmn' or 'periodic_odm')"
+}
+
+# initialize variables
+unset ELASTIC_USER_NAME
+unset ELASTIC_USER_PASSWORD
+unset ELASTIC_URL
+unset ICP4AComponent_Name
+
+OPTIND=1         # Reset in case getopts has been used previously in the shell.
+
+if [[ $1 == "" ]]
+then
+    showHelp
+    exit -1
+else
+    while getopts ":hu:p:k:c:" opt; do
+        case "$opt" in
+        h|\?)
+            showHelp
+            exit 0
+            ;;
+        u)  ELASTIC_USER_NAME=${OPTARG}
+            ;;
+        p)  ELASTIC_USER_PASSWORD=${OPTARG}
+            ;;
+        k)  ELASTIC_URL=${OPTARG}
+            ;;
+        c)  ICP4AComponent_Name=${OPTARG}
+            ;;
+        :)  echo "Invalid option: -$OPTARG requires an argument"
+            showHelp
+            exit -1
+            ;;
+      esac
+    done
+
+fi
+
+if [ -z "${ELASTIC_USER_NAME}" ]; then
+    echo "No Elasticsearch user name defined."
+    exit 1;
+fi
+
+if [ -z "${ELASTIC_USER_PASSWORD}" ]; then
+    echo "No Elasticsearch user password defined."
+    exit 1;
+fi
+
+if [ -z "${ELASTIC_URL}" ]; then
+    echo "No Elasticsearch url defined."
+    exit 1;
+fi
+
+if [ -z "${ICP4AComponent_Name}" ]; then
+    echo "No ICP4A component directory defined."
+    exit 1;
+else
+    PROPERTIES_FILE_PATH="${HOME_DIR}/conf/${ICP4AComponent_Name}.properties"
+    . "${PROPERTIES_FILE_PATH}"
+fi
+
+# Create the logs directory if necessary.
+if [ ! -d "${HOME_DIR}/logs" ]; then
+  mkdir "${HOME_DIR}/logs"
+fi
+
+for index_file_path in ${HOME_DIR}/data/${ICP4AComponent_Name}/* ; do
+
+  index_name="${index_file_path##*/}"
+  index_name="${index_name%.*}"
+
+  parametrized_file=$(envsubst < "${index_file_path}")
+
+  major_version_number=$(curl -k --user "${ELASTIC_USER_NAME}:${ELASTIC_USER_PASSWORD}" -XGET "https://${ELASTIC_URL}/" | jq -r .version.number | cut -c 1)
+  if [ "${major_version_number}" -ge "7" ]; then
+    query_url="${index_name}"
+  else
+    elastic_document_type=$(curl -k --user "${ELASTIC_USER_NAME}:${ELASTIC_USER_PASSWORD}" -XGET "https://${ELASTIC_URL}/${index_name}/_mapping" | jq -r '.[] | .mappings | keys | .[0] ' | tr -d '\n\r')
+    query_url="${index_name}/${elastic_document_type}"
+  fi
+
+  curl -k --user "${ELASTIC_USER_NAME}:${ELASTIC_USER_PASSWORD}" -XPOST "https://${ELASTIC_URL}/${query_url}/_bulk" --data-binary @- -H "Content-Type: application/x-ndjson" <<< "${parametrized_file}" > "${HOME_DIR}/logs/${index_name}-upload.log"
+  if [ $? = 0 ]; then
+      echo "${index_name} index data correctly injected in BAI."
+  else
+      echo "${index_name} index data injection in BAI failed."
+  fi
+
+done
