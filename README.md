@@ -1,6 +1,7 @@
 # Importing sample data for IBM Business Automation Insights
 
-**New in 20.0.3** You can test and explore IBM Business Automation Insights by using the provided script and sample data. This script is designed only for IBM Business Automation Insights 20.0.3 or later.
+You can test and explore IBM Business Automation Insights by using the provided script and sample data.
+This script is designed only for IBM Business Automation Insights 21.0.1 or later.
 
 ## Prerequisites
 
@@ -42,23 +43,37 @@ You access Elasticsearch differently depending on whether you work with IBM Busi
 
   * With IBM Business Automation Insights for a server:
 
-  1. Set the ELASTICSEARCH_PORT environment variable in the <bai_sn_install_dir>/.env configuration file, for example to 9200.
-  2. Log in to Elasticsearch by using the credentials that you passed when you installed IBM Business Automation Insights for a server.
+  1. Set the `ELASTICSEARCH_PORT` environment variable in the `<bai_sn_install_dir>/.env` configuration file, for example to 9200.
+  2. The Elasticsearch URL is `https://<HOSTNAME>:<ELASTICSEARCH_PORT>`, where `<HOSTNAME>` is the hostname that you specified during the installation.
+  3. Log in to Elasticsearch by using the credentials that you passed when you installed IBM Business Automation Insights for a server.
 
   * OpenShift cluster:
 
-    Access to Elasticsearch requires an OpenShift route.<br />
-    1. Check whether an OpenShift route to Elasticsearch exists.
-    ```
-    oc get route --namespace <NAMESPACE> | grep "-ibm-dba-ek-client"
-    ```
+  1. Log in to the OpenShift namespace where the IBM Cloud Pak for Business Automation platform is deployed.
 
-    If the route exists, the command returns its name and hostname. Otherwise, it returns nothing. Use the route URL as the Elasticsearch URL when you run the import script.<br />
+  2. Retrieve the Elasticsearch URL.
 
-    1. If the Openshift route does not exist, create one as instructed in
-  link: [Exposing the Elasticsearch service through an OpenShift route or an Ingress](https://www.ibm.com/support/knowledgecenter/en/SSYHZ8_20.0.x/com.ibm.dba.install/op_topics/tsk_post_bai_deploy_es_route.html)<br />
+```sh
+oc get cartridgerequirements icp4ba -o jsonpath='{.status.components.elasticsearch.endpoints[?(.scope=="External")].uri}'
+```
 
-    1. To log in to Elasticsearch, use the credentials that you specified when you installed IBM Business Automation Insights with the provided Elasticsearch and Kibana. By default, use <code>admin</code> as the username and <code>passw0rd</code> as the user password. See [Embedded Elasticsearch parameters](https://www.ibm.com/support/knowledgecenter/en/SSYHZ8_20.0.x/com.ibm.dba.ref/k8s_topics/ref_bai_k8s_es_params.html).<br />
+  3. Retrieve the name of the Elasticsearch secret containing the username and password.
+
+```sh
+ELASTICSEARCH_SECRET=$(oc get cartridgerequirements icp4ba -o jsonpath='{.status.components.elasticsearch.endpoints[?(.scope=="External")].authentication.secret.secretName}')
+```
+
+  4. Retrieve the Elasticsearch username.
+
+```sh
+oc extract secret/${ELASTICSEARCH_SECRET} --keys=username --to=-
+```
+
+  5. Retrieve the Elasticsearch password.
+
+```sh
+oc extract secret/${ELASTICSEARCH_SECRET} --keys=password --to=-
+```
 
 ## Importing sample data
 
@@ -72,7 +87,7 @@ You access Elasticsearch differently depending on whether you work with IBM Busi
 
 1. Run the <code>bai-import-index</code> script with the following options:
 ```
-./bin/bai-import-index -u <Elasticsearch_user_name> -p <Elasticsearch_user_password> -k <Elasticsearch_URL> -c <periodic_odm | bpmn>
+./bin/bai-import-index -u <Elasticsearch_username> -p <Elasticsearch_password> -k <Elasticsearch_URL> -c <periodic_odm | bpmn>
 ```
 When the import completes, you can create visualizations from the imported data by using Kibana and Business Performance Center. <br />
 * Operational Decision Manager data appears as **Decisions** dashboards.
@@ -85,23 +100,20 @@ When the import completes, you can create visualizations from the imported data 
 
 ### Examples
 
-To run the following commands, set <code>localhost</code> to the hostname that you specified during the installation and use 9200 as the Elasticsearch port.
-
 This command imports data from a IBM Business Automation Workflow BPMN data source.
 
-```
-./bin/bai-import-index -u elastic -p myPassword -k localhost:9200 -c bpmn
-
+```sh
+./bin/bai-import-index -u <Elasticsearch_username> -p <Elasticsearch_password> -k <Elasticsearch_URL> -c bpmn
 ```
 
 This command imports data from an Operational Decision Manager data source.
 
-```
-./bin/bai-import-index -u elastic -p myPassword -k localhost:9200 -c periodic_odm
+```sh
+./bin/bai-import-index -u <Elasticsearch_username> -p <Elasticsearch_password> -k <Elasticsearch_URL> -c periodic_odm
 ```
 
 This command imports data from an Automation Decision Services data source.
 
-```
-./bin/bai-import-index -u elastic -p myPassword -k localhost:9200 -c ads-common-data
+```sh
+./bin/bai-import-index -u <Elasticsearch_username> -p <Elasticsearch_password> -k <Elasticsearch_URL> -c ads-common-data
 ```
