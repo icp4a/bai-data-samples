@@ -16,14 +16,14 @@ HOME_DIR="${CUR_DIR}/.."
 
 
 function showHelp {
-    echo -e "\nUsage: bai-import-index -u <Elasticsearch user name> -p <Elasticsearch user password> -k <Elasticsearch URL>\n -c <ICP4A component name>"
+    echo -e "\nUsage: bai-import-index -u <Elasticsearch_username> -p <Elasticsearch_password> -k <Elasticsearch_URL>\n -c <ICP4A component name>"
     echo "Options:"
     echo "  -h  Display help"
-    echo "  -u  Elasticsearch user name"
-    echo "  -p  Elasticsearch user password"
-    echo "  -k  Elasticsearch URL (On Docker: '<Elasticsearch hostname>:<Elasticsearch port>' or "
-    echo "      on Kubernetes: An Elasticsearch Route name)"
-    echo "  -c  The ICP4A component name ('bpmn' or 'periodic_odm')"
+    echo "  -u  Elasticsearch username"
+    echo "  -p  Elasticsearch password"
+    echo "  -k  Elasticsearch URL (On Docker: https://<Elasticsearch_hostname>:<Elasticsearch_port>' or"
+    echo "      on Kubernetes: the Elasticsearch URL)"
+    echo "  -c  The ICP4A component name ('bpmn', 'periodic_odm', or 'ads-common-data')"
 }
 
 # initialize variables
