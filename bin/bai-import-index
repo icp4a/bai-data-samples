@@ -97,15 +97,15 @@ for index_file_path in ${HOME_DIR}/data/${ICP4AComponent_Name}/* ; do
 
   parametrized_file=$(envsubst < "${index_file_path}")
 
-  major_version_number=$(curl -k --user "${ELASTIC_USER_NAME}:${ELASTIC_USER_PASSWORD}" -XGET "https://${ELASTIC_URL}/" | jq -r .version.number | cut -c 1)
+  major_version_number=$(curl -k --user "${ELASTIC_USER_NAME}:${ELASTIC_USER_PASSWORD}" -XGET "${ELASTIC_URL}/" | jq -r .version.number | cut -c 1)
   if [ "${major_version_number}" -ge "7" ]; then
     query_url="${index_name}"
   else
-    elastic_document_type=$(curl -k --user "${ELASTIC_USER_NAME}:${ELASTIC_USER_PASSWORD}" -XGET "https://${ELASTIC_URL}/${index_name}/_mapping" | jq -r '.[] | .mappings | keys | .[0] ' | tr -d '\n\r')
+    elastic_document_type=$(curl -k --user "${ELASTIC_USER_NAME}:${ELASTIC_USER_PASSWORD}" -XGET "${ELASTIC_URL}/${index_name}/_mapping" | jq -r '.[] | .mappings | keys | .[0] ' | tr -d '\n\r')
     query_url="${index_name}/${elastic_document_type}"
   fi
 
-  curl -k --user "${ELASTIC_USER_NAME}:${ELASTIC_USER_PASSWORD}" -XPOST "https://${ELASTIC_URL}/${query_url}/_bulk" --data-binary @- -H "Content-Type: application/x-ndjson" <<< "${parametrized_file}" > "${HOME_DIR}/logs/${index_name}-upload.log"
+  curl -k --user "${ELASTIC_USER_NAME}:${ELASTIC_USER_PASSWORD}" -XPOST "${ELASTIC_URL}/${query_url}/_bulk" --data-binary @- -H "Content-Type: application/x-ndjson" <<< "${parametrized_file}" > "${HOME_DIR}/logs/${index_name}-upload.log"
   if [ $? = 0 ]; then
       echo "${index_name} index data correctly injected in BAI."
   else
