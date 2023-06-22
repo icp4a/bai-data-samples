@@ -23,7 +23,7 @@ function showHelp {
     echo "  -p  Elasticsearch password"
     echo "  -k  Elasticsearch URL (On Docker: https://<Elasticsearch_hostname>:<Elasticsearch_port>' or"
     echo "      on Kubernetes: the Elasticsearch URL)"
-    echo "  -c  The ICP4A component name ('bpmn', 'periodic_odm', or 'ads-common-data')"
+    echo "  -c  The ICP4A component name ('bpmn' or 'periodic_odm')"
 }
 
 # initialize variables

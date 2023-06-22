@@ -1,7 +1,7 @@
 # Importing sample data for IBM Business Automation Insights
 
 You can test and explore IBM Business Automation Insights by using the provided script and sample data.
-This script is designed only for IBM Business Automation Insights 21.0.1 or later.
+This script is designed only for IBM Business Automation Insights 23.0.1 or later.
 
 ## Prerequisites
 
@@ -31,36 +31,24 @@ You install jq on MacOS, on Linux, or on Windows Cygwin by running curl commands
 
 ### About this capability
 
-The script imports data sets directly into Elasticsearch: for BPMN processes, Operational Decision Manager decisions or 
-Automation Decision Services. At each import, the data is dated by default at the current date minus 1 day (except for 
-Automation Decision Services). You can adjust the time span later in the dashboard.
+The script imports data sets directly into Elasticsearch: for BPMN processes or Operational Decision Manager decisions. At each import, the data is dated by default at the current date minus 1 day. You can adjust the time span later in the dashboard.
 
 ## Accessing Elasticsearch
 
 To use the import script, you must have access to Elasticsearch.
-
-You access Elasticsearch differently depending on whether you work with IBM Business Automation Insights for a server or with an OpenShift deployment.
-
-  * With IBM Business Automation Insights for a server:
-
-  1. Set the `ELASTICSEARCH_PORT` environment variable in the `<bai_sn_install_dir>/.env` configuration file, for example to 9200.
-  2. The Elasticsearch URL is `https://<HOSTNAME>:<ELASTICSEARCH_PORT>`, where `<HOSTNAME>` is the hostname that you specified during the installation.
-  3. Log in to Elasticsearch by using the credentials that you passed when you installed IBM Business Automation Insights for a server.
-
-  * OpenShift cluster:
 
   1. Log in to the OpenShift namespace where the IBM Cloud Pak for Business Automation platform is deployed.
 
   2. Retrieve the Elasticsearch URL.
 
 ```sh
-oc get cartridgerequirements icp4ba -o jsonpath='{.status.components.elasticsearch.endpoints[?(.scope=="External")].uri}'
+oc get elasticsearch iaf-system -o jsonpath="{.status.endpoints[?(@.scope=='External')].uri}"
 ```
 
   3. Retrieve the name of the Elasticsearch secret containing the username and password.
 
 ```sh
-ELASTICSEARCH_SECRET=$(oc get cartridgerequirements icp4ba -o jsonpath='{.status.components.elasticsearch.endpoints[?(.scope=="External")].authentication.secret.secretName}')
+ELASTICSEARCH_SECRET=$(oc get elasticsearch iaf-system -o jsonpath="{.status.endpoints[?(@.scope=='External')].authentication.secret.secretName}")
 ```
 
   4. Retrieve the Elasticsearch username.
@@ -94,8 +82,6 @@ When the import completes, you can create visualizations from the imported data 
 
 * BPMN data appears as **Workflow - Hiring Sample**, **Workflow - Process Tasks**, and **Workflow - Processes** dashboards.<br />
 
-* Automation Decision Services data appears as **Decisions (ADS) - Common Data**.<br />
-
 **Note:** To make sure that, in any dashboard, you see all the data you are interested in, adjust the date filter up to the latest 2 days.
 
 ### Examples
@@ -110,10 +96,4 @@ This command imports data from an Operational Decision Manager data source.
 
 ```sh
 ./bin/bai-import-index -u <Elasticsearch_username> -p <Elasticsearch_password> -k <Elasticsearch_URL> -c periodic_odm
-```
-
-This command imports data from an Automation Decision Services data source.
-
-```sh
-./bin/bai-import-index -u <Elasticsearch_username> -p <Elasticsearch_password> -k <Elasticsearch_URL> -c ads-common-data
 ```
