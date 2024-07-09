@@ -16,20 +16,20 @@ HOME_DIR="${CUR_DIR}/.."
 
 
 function showHelp {
-    echo -e "\nUsage: bai-import-index -u <Elasticsearch_username> -p <Elasticsearch_password> -k <Elasticsearch_URL>\n -c <ICP4A component name>"
+    echo -e "\nUsage: bai-import-index -u <Opensearch_username> -p <Opensearch_password> -k <Opensearch_URL>\n -c <ICP4A component name>"
     echo "Options:"
     echo "  -h  Display help"
-    echo "  -u  Elasticsearch username"
-    echo "  -p  Elasticsearch password"
-    echo "  -k  Elasticsearch URL (On Docker: https://<Elasticsearch_hostname>:<Elasticsearch_port>' or"
-    echo "      on Kubernetes: the Elasticsearch URL)"
+    echo "  -u  Opensearch username"
+    echo "  -p  Opensearch password"
+    echo "  -k  Opensearch URL (On Docker: https://<Opensearch_hostname>:<Opensearch_port>' or"
+    echo "      on Kubernetes: the Opensearch URL)"
     echo "  -c  The ICP4A component name ('bpmn' or 'periodic_odm')"
 }
 
 # initialize variables
-unset ELASTIC_USER_NAME
-unset ELASTIC_USER_PASSWORD
-unset ELASTIC_URL
+unset OPENSEARCH_USER_NAME
+unset OPENSEARCH_USER_PASSWORD
+unset OPENSEARCH_URL
 unset ICP4AComponent_Name
 
 OPTIND=1         # Reset in case getopts has been used previously in the shell.
@@ -45,11 +45,11 @@ else
             showHelp
             exit 0
             ;;
-        u)  ELASTIC_USER_NAME=${OPTARG}
+        u)  OPENSEARCH_USER_NAME=${OPTARG}
             ;;
-        p)  ELASTIC_USER_PASSWORD=${OPTARG}
+        p)  OPENSEARCH_USER_PASSWORD=${OPTARG}
             ;;
-        k)  ELASTIC_URL=${OPTARG}
+        k)  OPENSEARCH_URL=${OPTARG}
             ;;
         c)  ICP4AComponent_Name=${OPTARG}
             ;;
@@ -62,18 +62,18 @@ else
 
 fi
 
-if [ -z "${ELASTIC_USER_NAME}" ]; then
-    echo "No Elasticsearch user name defined."
+if [ -z "${OPENSEARCH_USER_NAME}" ]; then
+    echo "No Opensearch user name defined."
     exit 1;
 fi
 
-if [ -z "${ELASTIC_USER_PASSWORD}" ]; then
-    echo "No Elasticsearch user password defined."
+if [ -z "${OPENSEARCH_USER_PASSWORD}" ]; then
+    echo "No Opensearch user password defined."
     exit 1;
 fi
 
-if [ -z "${ELASTIC_URL}" ]; then
-    echo "No Elasticsearch url defined."
+if [ -z "${OPENSEARCH_URL}" ]; then
+    echo "No Opensearch url defined."
     exit 1;
 fi
 
@@ -97,15 +97,7 @@ for index_file_path in ${HOME_DIR}/data/${ICP4AComponent_Name}/* ; do
 
   parametrized_file=$(envsubst < "${index_file_path}")
 
-  major_version_number=$(curl -k --user "${ELASTIC_USER_NAME}:${ELASTIC_USER_PASSWORD}" -XGET "${ELASTIC_URL}/" | jq -r .version.number | cut -c 1)
-  if [ "${major_version_number}" -ge "7" ]; then
-    query_url="${index_name}"
-  else
-    elastic_document_type=$(curl -k --user "${ELASTIC_USER_NAME}:${ELASTIC_USER_PASSWORD}" -XGET "${ELASTIC_URL}/${index_name}/_mapping" | jq -r '.[] | .mappings | keys | .[0] ' | tr -d '\n\r')
-    query_url="${index_name}/${elastic_document_type}"
-  fi
-
-  curl -k --user "${ELASTIC_USER_NAME}:${ELASTIC_USER_PASSWORD}" -XPOST "${ELASTIC_URL}/${query_url}/_bulk" --data-binary @- -H "Content-Type: application/x-ndjson" <<< "${parametrized_file}" > "${HOME_DIR}/logs/${index_name}-upload.log"
+  curl -k --user "${OPENSEARCH_USER_NAME}:${OPENSEARCH_USER_PASSWORD}" -XPOST "${OPENSEARCH_URL}/${index_name}/_bulk" --data-binary @- -H "Content-Type: application/x-ndjson" <<< "${parametrized_file}" > "${HOME_DIR}/logs/${index_name}-upload.log"
   if [ $? = 0 ]; then
       echo "${index_name} index data correctly injected in BAI."
   else

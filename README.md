@@ -31,36 +31,36 @@ You install jq on MacOS, on Linux, or on Windows Cygwin by running curl commands
 
 ### About this capability
 
-The script imports data sets directly into Elasticsearch: for BPMN processes or Operational Decision Manager decisions. At each import, the data is dated by default at the current date minus 1 day. You can adjust the time span later in the dashboard.
+The script imports data sets directly into Opensearch: for BPMN processes or Operational Decision Manager decisions. At each import, the data is dated by default at the current date minus 1 day. You can adjust the time span later in the dashboard.
 
-## Accessing Elasticsearch
+## Accessing Opensearch
 
-To use the import script, you must have access to Elasticsearch.
+To use the import script, you must have access to Opensearch.
 
   1. Log in to the OpenShift namespace where the IBM Cloud Pak for Business Automation platform is deployed.
 
-  2. Retrieve the Elasticsearch URL.
+  2. Retrieve the Opensearch URL. Enter the namespace
 
 ```sh
-oc get elasticsearch iaf-system -o jsonpath="{.status.endpoints[?(@.scope=='External')].uri}"
+oc get route opensearch-route -n ${NAMESPACE} -o jsonpath='{.status.ingress[0].host}'
 ```
 
-  3. Retrieve the name of the Elasticsearch secret containing the username and password.
+  3. Retrieve the name of the Opensearch secret containing the username and password.
 
 ```sh
-ELASTICSEARCH_SECRET=$(oc get elasticsearch iaf-system -o jsonpath="{.status.endpoints[?(@.scope=='External')].authentication.secret.secretName}")
+OPENSEARCH_SECRET=opensearch-ibm-elasticsearch-cred-secret
 ```
 
-  4. Retrieve the Elasticsearch username.
+  4. Retrieve the Opensearch username.
 
 ```sh
-oc extract secret/${ELASTICSEARCH_SECRET} --keys=username --to=-
+OPENSEARCH_USERNAME=elastic
 ```
 
-  5. Retrieve the Elasticsearch password.
+  5. Retrieve the Opensearch password.
 
 ```sh
-oc extract secret/${ELASTICSEARCH_SECRET} --keys=password --to=-
+oc extract secret/${OPENSEARCH_SECRET} --keys=elastic --to=-
 ```
 
 ## Importing sample data
@@ -75,7 +75,7 @@ oc extract secret/${ELASTICSEARCH_SECRET} --keys=password --to=-
 
 1. Run the <code>bai-import-index</code> script with the following options:
 ```
-./bin/bai-import-index -u <Elasticsearch_username> -p <Elasticsearch_password> -k <Elasticsearch_URL> -c <periodic_odm | bpmn>
+./bin/bai-import-index -u <Opensearch_username> -p <Opensearch_password> -k <Opensearch_URL> -c <periodic_odm | bpmn>
 ```
 When the import completes, you can create visualizations from the imported data by using Kibana and Business Performance Center. <br />
 * Operational Decision Manager data appears as **Decisions** dashboards.
@@ -89,11 +89,11 @@ When the import completes, you can create visualizations from the imported data 
 This command imports data from a IBM Business Automation Workflow BPMN data source.
 
 ```sh
-./bin/bai-import-index -u <Elasticsearch_username> -p <Elasticsearch_password> -k <Elasticsearch_URL> -c bpmn
+./bin/bai-import-index -u <Opensearch_username> -p <Opensearch_password> -k <Opensearch_URL> -c bpmn
 ```
 
 This command imports data from an Operational Decision Manager data source.
 
 ```sh
-./bin/bai-import-index -u <Elasticsearch_username> -p <Elasticsearch_password> -k <Elasticsearch_URL> -c periodic_odm
+./bin/bai-import-index -u <Opensearch_username> -p <Opensearch_password> -k <Opensearch_URL> -c periodic_odm
 ```
