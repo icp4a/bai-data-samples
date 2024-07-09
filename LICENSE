@@ -82,7 +82,6 @@ Licensee is permitted to use only the following components or functions of the i
 IBM WebSphere Application Server Network Deployment only for use in support of the following Bundled Programs: 
 - IBM FileNet Content Manager
 - IBM FileNet Content Manager for Non-Production Environment
-- IBM FileNet Content Manager Text Search using Elasticsearch or OpenSearch for Non-Production Environments 
 - IBM Datacap
 - IBM Datacap Non-Production
 - IBM Enterprise Records
@@ -196,7 +195,6 @@ Licensee is permitted to use only the following components or functions of the i
 IBM WebSphere Application Server Network Deployment only for use in support of the following Bundled Programs: 
 - IBM FileNet Content Manager
 - IBM FileNet Content Manager for Non-Production Environment
-- IBM FileNet Content Manager Text Search using Elasticsearch or OpenSearch for Non-Production Environments 
 - IBM Datacap
 - IBM Datacap Non-Production
 - IBM Enterprise Records
@@ -240,7 +238,6 @@ Licensee may install and use the following Program components, under the license
 - IBM Business Automation Application Engine when used in Non-Production
 - IBM Business Automation Insights when used in Non-Production
 - IBM Automation Workstream Services when used in Non-Production
-- IBM Workflow Process Service when used in Non-Production
 - IBM Robotic Process Automation Studio
 - IBM Db2 Standard Edition
 - IBM FileNet Content Manager for Non-Production Environment when Concurrent, Authorized, Infrequent, External, Employee User Conversion Entitlement Ratio is used.
@@ -314,7 +311,6 @@ Virtual Server is a unit of measure by which the Program can be licensed. A serv
 In addition to the above, the following terms apply to Licensee's use of the Program.
 
 Million Event
-
 A Million Event is a unit of measure by which the Program can be licensed. A Million Event is a log event generated from a server, application or device that can be processed for a specific purpose, rounded up to the nearest million. Sufficient entitlements must be obtained to cover the maximum number of Million Events to be collected and processed by the Program at any time.
 
 Entitlement Values 
@@ -326,7 +322,7 @@ IBM Automation Decision Services Version:1.0
 Business Automation Application Engine (Component of the Program) 
 - Conversion Entitlement Ratio: 1 VPC/ 1 VPC
 
-Business Automation Insights
+Business Automation Insights 
 - Conversion Entitlement Ratio: 1 VPC/ 1 VPC
 
 IBM FileNet Content Manager
@@ -404,10 +400,10 @@ Task Mining Agent add-on
 - Conversion Entitlement Ratio: 17 Concurrent Connection/ 1 VPC
 
 IBM Workflow Process Service - Single Process App (Component of the Program)
-- Conversion Entitlement Ratio: 1 VPC/ 5 VPCs
+- Conversion Entitlement Ratio: 1 VPC/ 5 VPCs 
 - Conversion Entitlement Ratio for Non-Production Environment: 2 VPCs/ 5 VPCs
 - If Licensee purchased VPC entitlements prior to June 30, 2024, Licensee may install and use the following Program components, under the license terms, but these components are not used to determine the number of entitlements required for the Program:
-- IBM Workflow Process Service when used in Non-Production 
+- IBM Workflow Process Service when used in Non-Production
 - If Licensee purchased VPC entitlements prior to Mar 30, 2023, Licensee may continue to convert such VPC entitlements with the following ratio:
 - Conversion Entitlement Ratio: 1 VPC/ 1 VPC
 - Use Limitation: 1 TWX file (not including different versions of the same TWX file) per IBM Workflow Process Service instance
@@ -443,7 +439,6 @@ OR
 - Conversion Entitlement Ratio: 6860 External User/ 1 VPC, where Licensee measures entitlement by Authorized or Employee User
 
 If the Client measures entitlement for IBM FileNet Content Manager, IBM Business Automation Workflow Enterprise, IBM Content Collector for Email, Files & Sharepoint, or IBM Content Collector for SAP from one of the User-Based ratios above, then those programs must be measured in one of the User-Based ratios enterprise wide.
-
 If the Client has acquired the Program as a result of agreeing to the terms of the addendum titled "IBM Cloud Pak for Business Automation and IBM Business Automation Workflow User-Based Trade Up and Subscription License Upgrade Restriction," (the "Subscription License Upgrade Restriction"), then the Client must measure deployment for the trade up and subscription license upgrade on the user-based metrics of Authorized User, Employee User, External User, Concurrent User, and/or Infrequent User. No other metric shall be used for deployment measurement for license trade up and subscription license upgrade and subsequent additional license to this Program if the trade up or upgrade was subject to the Subscription License Upgrade Restriction.
 
 "Conversion Entitlement Ratio n/m" means that Licensee can convert some number ('n') entitlements of the indicated metric for the listed program for every specified number ('m') entitlements of the specified metric for the Program. Once converted, Licensee may only use such converted entitlements for the listed program. The specified conversion does not apply to any entitlements for the Program that are not of the required metric type.
@@ -451,7 +446,6 @@ If the Client has acquired the Program as a result of agreeing to the terms of t
 Red Hat Products
 
 Red Hat Products listed below include software, maintenance and support in the form of Red Hat Software Subscriptions governed by a separate Red Hat Enterprise Agreement set forth at https://www.redhat.com/en/about/agreements (or if applicable, a negotiated version of such agreement between Licensee and Red Hat). 
-
 Under this License Information, Licensee acquires Red Hat Software Subscription entitlements for the listed Red Hat Products in the quantities and/or ratios set out below in this LI. The Red Hat Software Subscription entitlements are applicable and valid only to the extent the Red Hat Products are used in support of the Program, and only while Licensee has IBM Software Subscription and Support (S&S) in effect for the Program. Red Hat Software Subscription entitlements do not include support of the Red Hat Products to run, deploy or otherwise support any software other than the Program, and Licensee acknowledges additional per unit fees at Red Hat standard rates will apply for any broader usage. Red Hat's standard Software Subscription support does not include Red Hat's remote access to Licensee's network and/or systems, but, if the parties mutually agree that remote access is needed for a support issue, such remote access is subject to the terms of the Remote Access Rider to the Red Hat agreement set forth at: https://www.redhat.com/wapps/tnc/standalone/RemoteAccessRider (Red Hat login required).
 
 The Principal Program, when purchased from a hyperscaler marketplace is supported for deployment on the cloud service of the hyperscaler on which the purchase is made. For example, the license entitlements purchased from Amazon Web Services (AWS) marketplace are only supported for the deployment on AWS.
@@ -462,7 +456,6 @@ Red Hat OpenShift Container Platform
 "Additional Entitlement Ratio n/m" means that Licensee receives some number ('n') entitlements of the indicated metric for the identified program for every specified number ('m') entitlements of the specified metric for the Program as a whole. The specified ratio does not apply to any entitlements for the Program that are not of the required metric type. The number of entitlements for the identified program is rounded up to a multiple of 'n'.
 
 Use of Usage Metering Data 
-
 The Program enables use of a usage metering dashboard (the "Dashboard") that enables the display and monitoring of certain data and metrics regarding Licensee's deployment and usage of IBM and non-IBM software programs, as well as the computing environment on which they are deployed ("Usage Metering Data"). Usage of the Dashboard requires registration on either the Red Hat Marketplace or IBM Software Central. Licensee's usage of the Dashboard and IBM's use and sharing of Usage Metering Data are governed by the terms of the Service Description for the Red Hat Marketplace, Operated by IBM, available here: https://www.ibm.com/support/customer/csol/terms?id=i126-8719, and if Licensee enables or uses the Dashboard, Licensee agrees to those terms.
 
 
@@ -501,4 +494,3 @@ Instead of the entitlements required for the Program directly, Licensee must obt
 L/N: L-FNHF-F9RU7N
 D/N: L-FNHF-F9RU7N
 P/N: L-FNHF-F9RU7N
-
