@@ -75,7 +75,7 @@ oc extract secret/${OPENSEARCH_SECRET} --keys=elastic --to=-
 
 1. Run the <code>bai-import-index</code> script with the following options:
 ```
-./bin/bai-import-index -u <Opensearch_username> -p <Opensearch_password> -k <Opensearch_URL> -c <periodic_odm | bpmn>
+./bin/bai-import-index -u <Opensearch_username> -p <Opensearch_password> -k https://<Opensearch_URL> -c <periodic_odm | bpmn>
 ```
 When the import completes, you can create visualizations from the imported data by using Kibana and Business Performance Center. <br />
 * Operational Decision Manager data appears as **Decisions** dashboards.
@@ -89,11 +89,11 @@ When the import completes, you can create visualizations from the imported data 
 This command imports data from a IBM Business Automation Workflow BPMN data source.
 
 ```sh
-./bin/bai-import-index -u <Opensearch_username> -p <Opensearch_password> -k <Opensearch_URL> -c bpmn
+./bin/bai-import-index -u <Opensearch_username> -p <Opensearch_password> -k https://<Opensearch_URL> -c bpmn
 ```
 
 This command imports data from an Operational Decision Manager data source.
 
 ```sh
-./bin/bai-import-index -u <Opensearch_username> -p <Opensearch_password> -k <Opensearch_URL> -c periodic_odm
+./bin/bai-import-index -u <Opensearch_username> -p <Opensearch_password> -k https://<Opensearch_URL> -c periodic_odm
 ```
