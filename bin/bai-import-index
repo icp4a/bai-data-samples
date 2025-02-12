@@ -3,7 +3,7 @@
 ##################################################################
 # Licensed Materials - Property of IBM
 #  5737-I23
-#  Copyright IBM Corp. 2020. All Rights Reserved.
+#  Copyright IBM Corp. 2020 - 2025. All Rights Reserved.
 #  U.S. Government Users Restricted Rights:
 #  Use, duplication or disclosure restricted by GSA ADP Schedule
 #  Contract with IBM Corp.
@@ -11,7 +11,7 @@
 
 set -e
 
-CUR_DIR=$(cd $(dirname $0); pwd)
+CUR_DIR=$(cd "$(dirname "$0")"; pwd)
 HOME_DIR="${CUR_DIR}/.."
 
 
@@ -32,12 +32,12 @@ unset OPENSEARCH_USER_PASSWORD
 unset OPENSEARCH_URL
 unset ICP4AComponent_Name
 
-OPTIND=1         # Reset in case getopts has been used previously in the shell.
+OPTIND=1  # Reset in case getopts has been used previously in the shell.
 
 if [[ $1 == "" ]]
 then
     showHelp
-    exit -1
+    exit 1
 else
     while getopts ":hu:p:k:c:" opt; do
         case "$opt" in
@@ -55,7 +55,7 @@ else
             ;;
         :)  echo "Invalid option: -$OPTARG requires an argument"
             showHelp
-            exit -1
+            exit 1
             ;;
       esac
     done
@@ -82,6 +82,7 @@ if [ -z "${ICP4AComponent_Name}" ]; then
     exit 1;
 else
     PROPERTIES_FILE_PATH="${HOME_DIR}/conf/${ICP4AComponent_Name}.properties"
+    # shellcheck source=/dev/null
     . "${PROPERTIES_FILE_PATH}"
 fi
 
@@ -90,18 +91,25 @@ if [ ! -d "${HOME_DIR}/logs" ]; then
   mkdir "${HOME_DIR}/logs"
 fi
 
-for index_file_path in ${HOME_DIR}/data/${ICP4AComponent_Name}/* ; do
-
+for index_file_path in "${HOME_DIR}/data/${ICP4AComponent_Name}"/* ; do
   index_name="${index_file_path##*/}"
   index_name="${index_name%.*}"
 
   parametrized_file=$(envsubst < "${index_file_path}")
 
-  curl -k --user "${OPENSEARCH_USER_NAME}:${OPENSEARCH_USER_PASSWORD}" -XPOST "${OPENSEARCH_URL}/${index_name}/_bulk" --data-binary @- -H "Content-Type: application/x-ndjson" <<< "${parametrized_file}" > "${HOME_DIR}/logs/${index_name}-upload.log"
-  if [ $? = 0 ]; then
-      echo "${index_name} index data correctly injected in BAI."
-  else
-      echo "${index_name} index data injection in BAI failed."
-  fi
+  # Prepare log file path for each index
+  log_file="${HOME_DIR}/logs/${index_name}-upload.log"
 
+  response=$(curl -k --user "${OPENSEARCH_USER_NAME}:${OPENSEARCH_USER_PASSWORD}" -XPOST "${OPENSEARCH_URL}/${index_name}/_bulk" \
+    --data-binary @- -H "Content-Type: application/x-ndjson" <<< "${parametrized_file}" -w "%{http_code}" -o "$log_file")
+
+  # Log the response HTTP code
+  echo "HTTP response code: $response" >> "$log_file"
+
+  if [[ "$response" -ne 200 ]] || grep -q '"status":400' "$log_file"; then
+    echo "${index_name} index data injection in BAI failed."
+    echo "Please check $log_file for more details"
+  else
+    echo "${index_name} index data correctly injected in BAI."
+  fi
 done
