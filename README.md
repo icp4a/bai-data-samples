@@ -42,25 +42,21 @@ To use the import script, you must have access to Opensearch.
   2. Retrieve the Opensearch URL. Enter the namespace
 
 ```sh
-oc get route opensearch-route -n ${NAMESPACE} -o jsonpath='{.status.ingress[0].host}'
+OPENSEARCH_URL="https://$(oc get routes opensearch-route -o jsonpath="{.spec.host}" -n $NAMESPACE)"
 ```
 
-  3. Retrieve the name of the Opensearch secret containing the username and password.
-
+  3. Retrieve Opensearch credentials(SECRET,USERNAME,PASSWORD) based on the BAI Deployment version:
+   - For All 24.0.0 / 24.0.1 versions
 ```sh
 OPENSEARCH_SECRET=opensearch-ibm-elasticsearch-cred-secret
-```
-
-  4. Retrieve the Opensearch username.
-
-```sh
 OPENSEARCH_USERNAME=elastic
+OPENSEARCH_PASSWORD=$(oc extract secret/${OPENSEARCH_SECRET} --keys=elastic --to=- -n "$NAMESPACE" 2>/dev/null)
 ```
-
-  5. Retrieve the Opensearch password.
-
+  - For version 25.0.0 or later
 ```sh
-oc extract secret/${OPENSEARCH_SECRET} --keys=elastic --to=-
+OPENSEARCH_SECRET=opensearch-admin-user
+OPENSEARCH_USERNAME=$(oc get "secret/$OPENSEARCH_SECRET" -o json -n "$NAMESPACE" | jq -r '.data|keys[0]')
+OPENSEARCH_PASSWORD=$(oc extract "secret/$OPENSEARCH_SECRET" --keys="$OPENSEARCH_USERNAME" --to=- -n "$NAMESPACE" 2>/dev/null)
 ```
 
 ## Importing sample data
@@ -75,7 +71,7 @@ oc extract secret/${OPENSEARCH_SECRET} --keys=elastic --to=-
 
 1. Run the <code>bai-import-index</code> script with the following options:
 ```
-./bin/bai-import-index -u <Opensearch_username> -p <Opensearch_password> -k https://<Opensearch_URL> -c <periodic_odm | bpmn>
+./bin/bai-import-index -u ${OPENSEARCH_USERNAME} -p ${OPENSEARCH_PASSWORD} -k ${OPENSEARCH_URL} -c <periodic_odm | bpmn>
 ```
 When the import completes, you can create visualizations from the imported data by using Kibana and Business Performance Center. <br />
 * Operational Decision Manager data appears as **Decisions** dashboards.
@@ -89,11 +85,11 @@ When the import completes, you can create visualizations from the imported data 
 This command imports data from a IBM Business Automation Workflow BPMN data source.
 
 ```sh
-./bin/bai-import-index -u <Opensearch_username> -p <Opensearch_password> -k https://<Opensearch_URL> -c bpmn
+./bin/bai-import-index -u ${OPENSEARCH_USERNAME} -p ${OPENSEARCH_PASSWORD} -k ${OPENSEARCH_URL} -c bpmn
 ```
 
 This command imports data from an Operational Decision Manager data source.
 
 ```sh
-./bin/bai-import-index -u <Opensearch_username> -p <Opensearch_password> -k https://<Opensearch_URL> -c periodic_odm
+./bin/bai-import-index -u ${OPENSEARCH_USERNAME} -p ${OPENSEARCH_PASSWORD} -k ${OPENSEARCH_URL} -c periodic_odm
 ```

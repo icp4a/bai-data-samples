@@ -1,11 +1,15 @@
-The translated license terms can be viewed here: https://www.ibm.com/support/customer/csol/terms/?id=L-YZSW-9CAE3A&lc=en
+The translated license terms can be viewed here: https://www.ibm.com/support/customer/csol/terms/?id=L-ACQV-MS7LQZ&lc=en
+
+IMPORTANT: READ CAREFULLY
+
+Two license agreements are presented below.
 
 LICENSE INFORMATION
 
 The Programs listed below are licensed under the following License Information terms and conditions in addition to the Program license terms previously agreed to by Client and IBM. If Client does not have previously agreed to license terms in effect for the Program, the International Program License Agreement (i125-3301-15) applies.
 
 Program Name (Program Number):
-IBM Business Automation Insights  24.0.1 (5900-B75)
+IBM Business Automation Insights  25.0.0 (5900-B75)
 
 The following standard terms apply to Licensee's use of the Program.
 
@@ -16,6 +20,14 @@ The Program is provided as part of a multi-product install image. Licensee is au
 Non-Production Limitation
 
 If the Program is designated as "Non-Production", Licensee can only use the Program as part of Licensee's internal development and test environment for internal non-production activities.
+
+Components Not Used for Establishing Required Entitlements
+
+Licensee may install and use the following Program components, under the license terms, but these components are not used to determine the number of entitlements required for the Program.
+
+
+- Flink Job Manager, Management Rest API, Management back end (components of IBM Business Automation Insights)
+- IBM Business Automation Insights when used in Non-Production
 
 Modifiable Third Party Code
 
@@ -65,6 +77,6 @@ The Program enables use of a usage metering dashboard (the "Dashboard") that ena
 
 
 
-L/N: L-YZSW-9CAE3A
-D/N: L-YZSW-9CAE3A
-P/N: L-YZSW-9CAE3A
+L/N: L-ACQV-MS7LQZ
+D/N: L-ACQV-MS7LQZ
+P/N: L-ACQV-MS7LQZ
